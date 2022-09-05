@@ -13,3 +13,71 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+const BASE_URL = "http://localhost:3000/toys"
+
+fetch(BASE_URL)
+ .then(function(res){
+   return res.json()
+ })
+ .then((toyArray) => toyArray.forEach((toyObj) => renderToy(toyObj)))
+
+ function renderToy(toyObj){ 
+
+  const toyDiv = document.createElement('div')
+  toyDiv.className = "card"
+
+  const toyName = document.createElement('h2')
+  toyName.innerText = toyObj.name
+
+  const toyImg = document.createElement('img')
+  toyImg.src = toyObj.image
+  toyImg.className = "toy-avatar"
+
+  const toyLikes = document.createElement('p')
+  toyLikes.innerText = "Like: " + toyObj.likes
+
+  const likeBtn = document.createElement('button')
+  likeBtn.innerText = '❤️'
+  likeBtn.addEventListener('click', () => {
+    
+  
+    ++toyObj.likes
+    
+    toyLikes.innerText = `Like: ${toyObj.likes}`
+    
+  })
+
+  
+  toyDiv.append(toyName, toyImg, toyLikes, likeBtn)
+
+
+     const toyCollection = document.getElementById('toy-collection')
+    
+     toyCollection.appendChild(toyDiv)
+ }
+ const form = document.querySelector('.add-toy-form')
+
+ form.addEventListener('submit', submitHandler)
+
+
+function submitHandler(event){
+  event.preventDefault()
+  console.log("submitHandler")
+  const newToy = {
+    name: event.target.name.value,
+    likes: 0,
+    image: event.target.image.value
+  }
+
+  window.scrollTo(0,document.body.scrollHeight)
+  renderToy(newToy)
+  event.target.reset() 
+
+  fetch(BASE_URL, {
+    method: 'POST',
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(newToy)
+  })
+
+}
